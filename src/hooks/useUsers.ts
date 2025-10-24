@@ -14,13 +14,15 @@ export function useUsers() {
       const { data, error } = await supabase
         .from('users')
         .select('*')
-        .order('name');
+        .order('first_name');
 
       if (error) throw error;
 
       const formattedUsers = data?.map(user => ({
         ...user,
-        name: `${user.first_name} ${user.last_name}`
+        name: user.last_name
+          ? `${user.first_name} ${user.last_name}`.trim()
+          : user.first_name.trim()
       })) || [];
 
       setUsers(formattedUsers);
