@@ -87,13 +87,19 @@ function AuthenticatedApp({ user, signOut }: { user: any; signOut: () => Promise
   const [duplicateMetrics, setDuplicateMetrics] = useState<string[]>([]);
 
   const { rocks, loading: rocksLoading, addRock, updateRock, deleteRock, toggleMilestone, toggleActionItem, updateMilestone, updateActionItem } = useRocks();
-  const { users } = useUsers();
+  const { users, refresh: refreshUsers } = useUsers();
   const { scorecard, loading: scorecardLoading } = useScorecard();
   const { metrics, goals } = useMetrics();
   const { issues, addIssue } = useIssues();
   const { notes: l10NotesData, updateNote } = useL10Notes(selectedMeetingDate, selectedMeetingTimestamp);
   const { isSuperUser } = useActiveSession();
   const { offTrackMetrics, addOffTrackMetrics, removeOffTrackMetric } = useMeetingOffTrackMetrics(selectedMeetingTimestamp);
+
+  useEffect(() => {
+    if (activeTab === 'rocks' || activeTab === 'dashboard') {
+      refreshUsers();
+    }
+  }, [activeTab]);
 
   async function handleSignOut() {
     try {
