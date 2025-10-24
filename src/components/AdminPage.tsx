@@ -122,6 +122,8 @@ export function AdminPage() {
   }
 
   async function handleUpdateUser(userId: string) {
+    console.log('handleUpdateUser called with:', userId, editData);
+
     if (!editData.first_name.trim()) {
       alert('First name is required');
       return;
@@ -133,7 +135,16 @@ export function AdminPage() {
         ? `${editData.first_name} ${editData.last_name}`.trim()
         : editData.first_name.trim();
 
-      const { error } = await supabase
+      console.log('Updating user with data:', {
+        name: displayName,
+        first_name: editData.first_name,
+        last_name: editData.last_name,
+        email: editData.email,
+        title: editData.title,
+        role: editData.role
+      });
+
+      const { data, error } = await supabase
         .from('users')
         .update({
           name: displayName,
@@ -143,16 +154,19 @@ export function AdminPage() {
           title: editData.title,
           role: editData.role as 'super_user' | 'user'
         })
-        .eq('id', userId);
+        .eq('id', userId)
+        .select();
+
+      console.log('Update result:', { data, error });
 
       if (error) throw error;
 
       setEditingUserId(null);
       await refresh();
       alert('User updated successfully!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating user:', error);
-      alert('Failed to update user. Please try again.');
+      alert(`Failed to update user: ${error.message || 'Please try again.'}`);
     } finally {
       setIsSaving(false);
     }
