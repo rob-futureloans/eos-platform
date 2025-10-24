@@ -122,17 +122,21 @@ export function AdminPage() {
   }
 
   async function handleUpdateUser(userId: string) {
-    if (!editData.first_name.trim() || !editData.last_name.trim() || !editData.email.trim()) {
-      alert('Please fill in all required fields');
+    if (!editData.first_name.trim()) {
+      alert('First name is required');
       return;
     }
 
     setIsSaving(true);
     try {
+      const displayName = editData.last_name.trim()
+        ? `${editData.first_name} ${editData.last_name}`.trim()
+        : editData.first_name.trim();
+
       const { error } = await supabase
         .from('users')
         .update({
-          name: `${editData.first_name} ${editData.last_name}`,
+          name: displayName,
           first_name: editData.first_name,
           last_name: editData.last_name,
           email: editData.email,
@@ -247,21 +251,21 @@ export function AdminPage() {
                     value={editData.first_name}
                     onChange={(e) => setEditData({ ...editData, first_name: e.target.value })}
                     className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="First Name"
+                    placeholder="First Name *"
                   />
                   <input
                     type="text"
                     value={editData.last_name}
                     onChange={(e) => setEditData({ ...editData, last_name: e.target.value })}
                     className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Last Name"
+                    placeholder="Last Name (optional)"
                   />
                   <input
                     type="email"
                     value={editData.email}
                     onChange={(e) => setEditData({ ...editData, email: e.target.value })}
                     className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Email"
+                    placeholder="Email (optional)"
                   />
                   <input
                     type="text"
